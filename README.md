@@ -19,14 +19,24 @@ piece was chosen.
 2. In the SQL Editor, paste and run the entire contents of `supabase/migrations/0001_init.sql`.
 3. Go to **Authentication → Providers → Email** and turn **off** "Allow new users to sign up."
    This is what makes the app invite-only.
-4. Go to **Authentication → Users → Invite user** and invite all 3 owners, one at a time:
-   - santh.george@gmail.com
-   - roshan.remanan@gmail.com
-   - jijustephen@gmail.com
+4. **For now, invite only yourself**: Go to **Authentication → Users → Invite user** and invite
+   `santh.george@gmail.com`. Hold off on Roshan and Jiju until you're done testing — see the
+   callout below for why.
 
-   Optionally set each person's "Raw user meta data" to `{"full_name": "Their Name"}` when
-   inviting so their display name is right from the start (otherwise it defaults to the part of
-   their email before the `@`, and they can fix it later in the app's Settings page).
+   Optionally set your "Raw user meta data" to `{"full_name": "Santhosh George"}` when inviting
+   so your display name is right from the start (otherwise it defaults to the part of your email
+   before the `@`, and you can fix it later in the app's Settings page).
+
+   > **Why only yourself first:** the daily notification email goes to every row in the
+   > `owners` table, and a row is only created when someone accepts a Supabase invite. So as
+   > long as Roshan and Jiju haven't been invited yet, it is not possible for a test lease to
+   > accidentally email them — even if you trigger the notification function manually while
+   > testing (§4 below, and `docs/03-qa-test-plan.md` step 3). Once you've run through the QA
+   > checklist yourself and you're ready, come back to this step and invite:
+   > - roshan.remanan@gmail.com
+   > - jijustephen@gmail.com
+   >
+   > (same "Raw user meta data" trick works for their names too).
 5. Each owner gets an email with a link — it signs them in and sends them to `/update-password`
    to set their own password. That link only works after the app is deployed (step 3 below), so
    owners should wait to click it until you've shared the live URL.

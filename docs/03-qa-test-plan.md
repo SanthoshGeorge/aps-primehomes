@@ -17,14 +17,18 @@ Server Actions, and the components) and free of the known Next.js vulnerability.
 confirm the app works against a real Supabase project — that needs the manual pass below, which
 requires the accounts created during deployment (§3 of the README).
 
-## 2. Manual test plan — run this once, right after first deploy
+## 2. Manual test plan
 
-Walk through as each of the 3 owners where noted; otherwise any one owner is enough.
+Run in two stages: **Stage A solo** (only Santhosh invited — see README §1.4) covers everything
+except real multi-owner access, and is safe to run freely since the notification email only
+ever reaches accounts that exist yet. **Stage B** happens after Roshan and Jiju are
+deliberately invited.
+
+### Stage A — solo, before inviting Roshan or Jiju
 
 1. **Invite-only auth**
    - [ ] Confirm Supabase's public sign-up toggle is off (Authentication → Providers → Email).
-   - [ ] Each of the 3 invite emails arrives and its link signs the owner in and lands on
-         `/update-password`.
+   - [ ] Your invite email arrives and its link signs you in and lands on `/update-password`.
    - [ ] After setting a password, signing out and back in with email+password works.
    - [ ] Visiting the site while signed out redirects to `/login` (try `/`, `/properties/new`,
          and a `/properties/<id>` URL directly).
@@ -49,19 +53,30 @@ Walk through as each of the 3 owners where noted; otherwise any one owner is eno
    - [ ] In Supabase Table Editor, manually set a test lease's `end_date` to 45 days from today
          and `notified_expiry` to `false`, then in Netlify manually trigger the `lease-check`
          function (Functions tab → select it → "Trigger function," or wait for its next daily
-         run). Confirm: all 3 owners receive the email, and `notified_expiry` flips to `true` /
-         a row appears in `notification_log`. Confirm a second manual trigger does **not**
-         re-send it (already notified).
+         run). At this stage only your own account exists in `owners`, so this email should
+         land **only in your inbox** — confirm it does, and that `notified_expiry` flips to
+         `true` and a row appears in `notification_log`. Confirm a second manual trigger does
+         **not** re-send it (already notified). Delete or reset this test lease/property
+         afterwards so it isn't sitting in the data once Roshan and Jiju are added.
 
 4. **Keys, mortgage, insurance, HOA, utilities, contacts**
    - [ ] Fill in each section once and reload the page — values persist.
-   - [ ] Keys & garage opener "held by" dropdowns list all 3 owners by name.
+   - [ ] Keys & garage opener "held by" dropdown lists your own name (Roshan/Jiju will appear
+         here too once invited).
    - [ ] Add two utility accounts and one service contact; remove one of each — list updates
          without a full page reload.
 
+### Stage B — after inviting Roshan and Jiju (README §1.4)
+
+Only do this once Stage A looks right and you're ready for them to have access.
+
 5. **Multi-owner access**
+   - [ ] Roshan and Jiju each get their invite email and can set a password and sign in.
    - [ ] A second owner signs in and sees the same properties and data (shared, not
          per-owner-siloed), and can edit a section the first owner filled in.
+   - [ ] Repeat the lease-expiry trigger from Stage A step 3 once more, now that all 3 accounts
+         exist — confirm this time the email reaches all 3 inboxes (Roshan and Jiju included),
+         not just yours.
    - [ ] Each owner can rename themselves under Settings, and that name is what shows up in the
          key-holder dropdowns going forward.
 
