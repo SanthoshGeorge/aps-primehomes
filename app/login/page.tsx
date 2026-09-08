@@ -18,7 +18,8 @@ export default function LoginPage() {
   return (
     <div className="max-w-sm mx-auto mt-16">
       <div className="card">
-        <h1 className="text-lg font-semibold mb-1">APS PrimeHomes</h1>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="APS PrimeHomes" className="h-14 w-auto mb-3" />
         <p className="text-sm text-gray-500 mb-6">Sign in to manage the properties.</p>
 
         <form action={formAction} className="space-y-4">

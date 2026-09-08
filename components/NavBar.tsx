@@ -10,9 +10,10 @@ export default async function NavBar() {
 
   return (
     <header className="border-b border-gray-200 bg-white">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-semibold text-brand-700">
-          APS PrimeHomes
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="APS PrimeHomes" className="h-14 w-auto" />
         </Link>
         {user && (
           <div className="flex items-center gap-4 text-sm">
