@@ -109,13 +109,30 @@ LLC.
 
 ## 7. Future enhancements (explicitly out of scope for v1, but designed for)
 
-- Document upload/storage for lease, insurance, and mortgage PDFs (Supabase Storage).
-- Insurance renewal reminder (same mechanism as lease-expiry reminder).
-- Expense/income tracking per property.
-- Role differences between owners (e.g. one owner as primary point of contact).
+- Document upload/storage for lease, insurance, and mortgage PDFs (Supabase Storage). Still open.
+- ~~Insurance renewal reminder (same mechanism as lease-expiry reminder).~~ **Shipped post-launch** — see §9.
+- ~~Expense/income tracking per property.~~ **Shipped post-launch**, scoped to maintenance, repair, and turnover/relisting costs — see §9.
+- Role differences between owners (e.g. one owner as primary point of contact). Still open.
 
 ## 8. Sign-off
 
 All open questions resolved by Santhosh on 2026-09-06 (owner list, notification recipients,
 HOA/utility/contact fields, sender name, private repo). This document is the approved baseline
 for the Architecture phase.
+
+## 9. Post-launch enhancements (after v1 sign-off)
+
+This document reflects what was approved before the first build. It is not rewritten as the app
+evolves — instead, changes made after launch are tracked in
+[`docs/04-changelog.md`](./04-changelog.md), which is the up-to-date record of what the app
+actually does today. In summary, since v1 shipped:
+
+- Both items from §7 above marked "shipped" were built: insurance renewal reminders (30 days
+  before renewal, same mechanism as the lease-expiry reminder) and per-property expense
+  tracking (maintenance, repair, and turnover/relisting costs, on their own page).
+- Several usability enhancements not originally scoped were added based on hands-on use: real
+  branding (logo in the nav bar and login page), a self-service "change password" link so
+  Roshan and Jiju don't need Santhosh to reset their password later, and collapsible sections
+  with autosave on the property detail page so it doesn't keep growing as more data is tracked.
+- See the architecture doc's data model (§2) for the current schema, and the changelog for the
+  full list with rationale.

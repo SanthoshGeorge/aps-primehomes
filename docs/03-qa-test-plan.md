@@ -66,11 +66,44 @@ deliberately invited.
    - [ ] Add two utility accounts and one service contact; remove one of each — list updates
          without a full page reload.
 
+5. **Collapsible sections & autosave** *(added post-launch — see changelog)*
+   - [ ] On a property's detail page, every section is collapsed except "Current tenant &
+         lease," which is open by default.
+   - [ ] Clicking a section's header expands/collapses it; the chevron flips.
+   - [ ] Edit a field in property details, keys & access, mortgage, insurance, or HOA and stop
+         typing — a "Saving…" then "Saved" indicator appears without clicking any button.
+   - [ ] Edit a field, then immediately navigate to another page (e.g. Settings) before the
+         "Saved" indicator appears — come back and confirm the edit was still saved.
+   - [ ] Lease renewals, utilities, and contacts still require clicking their explicit
+         Save/Add button (these create new records, so they don't autosave).
+
+6. **Expenses** *(added post-launch — see changelog)*
+   - [ ] From a property's detail page, the "Expenses" link opens `/properties/[id]/expenses`.
+   - [ ] Add an expense with a category, amount, vendor, and description — it appears in the
+         table and the "This year" / "All time" / "By category" totals update.
+   - [ ] Remove an expense — it disappears and totals update accordingly.
+
+7. **Insurance renewal notification** *(added post-launch — see changelog)*
+   - [ ] In Supabase Table Editor, manually set a test property's insurance `renewal_date` to
+         20 days from today and `notified_renewal` to `false`, then manually trigger the
+         `lease-check` function (same trigger point used for the lease-expiry test in step 3).
+         Confirm the renewal email arrives, `notified_renewal` flips to `true`, and a
+         `notification_log` row appears with `type = 'insurance_renewal'`.
+   - [ ] Confirm a second manual trigger does not re-send it.
+   - [ ] Edit that policy's renewal date — confirm `notified_renewal` resets to `false` so the
+         reminder is re-armed.
+   - [ ] Reset or delete this test data afterwards, same as the lease-expiry test.
+
+8. **Self-service password change** *(added post-launch — see changelog)*
+   - [ ] Settings page shows a "Change password" link.
+   - [ ] It opens `/update-password`, and setting a new password there works and can be used to
+         sign in again.
+
 ### Stage B — after inviting Roshan and Jiju (README §1.4)
 
 Only do this once Stage A looks right and you're ready for them to have access.
 
-5. **Multi-owner access**
+9. **Multi-owner access**
    - [ ] Roshan and Jiju each get their invite email and can set a password and sign in.
    - [ ] A second owner signs in and sees the same properties and data (shared, not
          per-owner-siloed), and can edit a section the first owner filled in.
@@ -80,7 +113,7 @@ Only do this once Stage A looks right and you're ready for them to have access.
    - [ ] Each owner can rename themselves under Settings, and that name is what shows up in the
          key-holder dropdowns going forward.
 
-6. **Cost / infra sanity**
+10. **Cost / infra sanity**
    - [ ] Netlify site shows on the free plan with no payment method required.
    - [ ] Supabase project shows on the Free tier.
    - [ ] Brevo account shows on the Free plan with the sender verified.
