@@ -10,10 +10,10 @@ export default async function NavBar() {
 
   return (
     <header className="border-b border-gray-200 bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center gap-2 sm:gap-0 sm:justify-between">
         <Link href="/" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="APS PrimeHomes" className="h-14 w-auto" />
+          <img src="/logo.png" alt="APS PrimeHomes" className="h-10 sm:h-14 w-auto" />
         </Link>
         {user && (
           <div className="flex items-center gap-4 text-sm">
