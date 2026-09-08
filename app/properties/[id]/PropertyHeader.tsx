@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Property } from "@/lib/types";
 import { useAutosave } from "@/lib/useAutosave";
 import { updateProperty, setPropertyStatus } from "./actions";
@@ -12,21 +13,26 @@ export default function PropertyHeader({ property }: { property: Property }) {
     <div className="card">
       <div className="flex items-start justify-between mb-4">
         <h1 className="text-xl font-semibold">{property.nickname}</h1>
-        {property.status === "active" ? (
-          <button
-            onClick={() => setPropertyStatus(property.id, "archived")}
-            className="text-xs text-gray-400 hover:text-red-600"
-          >
-            Archive property
-          </button>
-        ) : (
-          <button
-            onClick={() => setPropertyStatus(property.id, "active")}
-            className="text-xs text-gray-400 hover:text-brand-600"
-          >
-            Restore from archive
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          <Link href={`/properties/${property.id}/expenses`} className="text-xs text-gray-400 hover:text-brand-600">
+            Expenses
+          </Link>
+          {property.status === "active" ? (
+            <button
+              onClick={() => setPropertyStatus(property.id, "archived")}
+              className="text-xs text-gray-400 hover:text-red-600"
+            >
+              Archive property
+            </button>
+          ) : (
+            <button
+              onClick={() => setPropertyStatus(property.id, "active")}
+              className="text-xs text-gray-400 hover:text-brand-600"
+            >
+              Restore from archive
+            </button>
+          )}
+        </div>
       </div>
 
       <form ref={formRef} onChange={handleChange} onBlur={handleBlur} className="grid sm:grid-cols-2 gap-4">

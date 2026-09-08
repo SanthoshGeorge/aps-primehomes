@@ -1,4 +1,4 @@
-import type { Lease, LeaseStatus } from "./types";
+import type { Lease, LeaseStatus, ExpenseCategory } from "./types";
 
 export const NOTICE_WINDOW_DAYS = 60;
 
@@ -45,3 +45,17 @@ export function formatCurrency(amount: number | null | undefined): string {
   if (amount === null || amount === undefined) return "—";
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 }
+
+export const EXPENSE_CATEGORY_LABEL: Record<ExpenseCategory, string> = {
+  maintenance: "Maintenance",
+  repair: "Repair",
+  turnover: "Turnover / Relisting",
+  other: "Other",
+};
+
+export const EXPENSE_CATEGORY_BADGE_CLASS: Record<ExpenseCategory, string> = {
+  maintenance: "bg-blue-100 text-blue-800",
+  repair: "bg-amber-100 text-amber-800",
+  turnover: "bg-purple-100 text-purple-800",
+  other: "bg-gray-100 text-gray-700",
+};

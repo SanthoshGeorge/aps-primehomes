@@ -122,15 +122,26 @@ notification_log
   insurance_policy_id  uuid FK -> insurance_policies, nullable -- set for insurance_renewal rows
   type                 text default 'lease_expiry'  -- 'lease_expiry' | 'insurance_renewal'
   sent_at              timestamptz default now()
+
+expenses               (many per property)
+  id             uuid PK
+  property_id    uuid FK -> properties
+  expense_date   date
+  category       text   check in ('maintenance','repair','turnover','other')
+  amount         numeric
+  vendor         text     -- who was paid
+  description    text
+  created_at     timestamptz default now()
 ```
 
 Design notes:
 - `leases` keeps full history (past tenants) per §5.2 of the requirements — the "current" lease is the row with `is_current = true`; a vacant property has no current row. Past tenants live on their own page (`properties/[id]/history`), linked from the current-lease card, so the main property page stays short as more history accumulates.
 - `mortgages`/`insurance_policies`/`hoa_info` are 1:1 with a property, split into their own tables (rather than extra columns on `properties`) purely for readability and so file-upload columns (v2) can be added to the relevant table later without touching unrelated data.
-- `utility_accounts` and `service_contacts` are 1:many, matching the "multiple handyman contacts" requirement.
+- `utility_accounts`, `service_contacts`, and `expenses` are 1:many, matching the "multiple handyman contacts" / ongoing cost-tracking requirements.
 - No table stores a full mortgage/loan account number, tenant government ID, or payment card data (§6 of requirements).
 - `notification_log.lease_id` is nullable (originally `not null`) so the same table can also log insurance-renewal notifications, which have no associated lease — exactly one of `lease_id` / `insurance_policy_id` is set per row, matching `type`.
-- All dollar-amount fields (`rent_amount`, mortgage `original_amount`/`monthly_payment`, `annual_premium`, HOA `due_amount`) are entered and displayed through a shared `MoneyInput` component with a fixed `$` prefix, so formatting is consistent everywhere.
+- All dollar-amount fields (`rent_amount`, mortgage `original_amount`/`monthly_payment`, `annual_premium`, HOA `due_amount`, expense `amount`) are entered and displayed through a shared `MoneyInput` component with a fixed `$` prefix, so formatting is consistent everywhere.
+- `expenses` deliberately isn't tied to a specific lease — maintenance, repair, and turnover/relisting costs are logged by date and category only, kept on its own page (`properties/[id]/expenses`, linked from the property header) rather than as another section on the already-long main property page. Category is a fixed list (Maintenance, Repair, Turnover/Relisting, Other) rather than free text, so totals-by-category stay meaningful. A cross-property rollup and richer reporting were deferred — Santhosh plans to add a "Reports" entry point later for per-property and portfolio-wide views.
 
 ## 3. Auth & security model
 
@@ -156,6 +167,7 @@ app/
   (dashboard)/page.tsx              -- property list + expiring-soon flags
   properties/[id]/page.tsx          -- full detail: lease, keys, mortgage, insurance, HOA, utilities, contacts
   properties/[id]/history/page.tsx  -- past tenants for this property (linked from the lease card)
+  properties/[id]/expenses/page.tsx -- maintenance/repair/turnover expenses (linked from the property header)
   properties/new/page.tsx
 lib/
   supabase/client.ts                -- browser client (anon key)

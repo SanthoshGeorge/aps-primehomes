@@ -90,3 +90,16 @@ export type ServiceContact = {
 };
 
 export type LeaseStatus = "vacant" | "active" | "expiring_soon" | "expired";
+
+export type ExpenseCategory = "maintenance" | "repair" | "turnover" | "other";
+
+export type Expense = {
+  id: string;
+  property_id: string;
+  expense_date: string;
+  category: ExpenseCategory;
+  amount: number;
+  vendor: string | null;
+  description: string | null;
+  created_at: string;
+};
