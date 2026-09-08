@@ -71,3 +71,10 @@ portfolio.
 Expense rows only supported Remove at first. Each row now also has an Edit button that turns it
 into an inline editable row (date, category, vendor, description, amount), with Save and Cancel,
 so a typo or wrong amount doesn't need to be deleted and re-entered from scratch.
+
+### Mobile layout for the expenses table
+
+The 6-column expense table (date, category, vendor, description, amount, actions) was unusable
+on a phone screen — cramped columns, wrapped headers, buttons cut off. Below the `sm` breakpoint
+it now renders as one stacked card per expense instead of a table, with the same Edit/Remove and
+inline-edit behavior; the table layout is unchanged on tablet and desktop.
