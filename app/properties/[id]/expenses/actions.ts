@@ -49,3 +49,37 @@ export async function deleteExpense(propertyId: string, expenseId: string) {
   await supabase.from("expenses").delete().eq("id", expenseId);
   revalidatePath(`/properties/${propertyId}/expenses`);
 }
+
+// Called directly from ExpenseRow (not via <form action=>), since it edits one
+// existing row in place rather than submitting a new one.
+export async function updateExpense(
+  propertyId: string,
+  expenseId: string,
+  fields: {
+    expense_date: string;
+    category: ExpenseCategory;
+    amount: number;
+    vendor: string | null;
+    description: string | null;
+  }
+) {
+  if (!fields.expense_date) return { error: "Date is required." };
+  if (!CATEGORIES.includes(fields.category)) return { error: "Category is required." };
+  if (fields.amount === null || Number.isNaN(fields.amount)) return { error: "Amount is required." };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("expenses")
+    .update({
+      expense_date: fields.expense_date,
+      category: fields.category,
+      amount: fields.amount,
+      vendor: fields.vendor,
+      description: fields.description,
+    })
+    .eq("id", expenseId);
+
+  if (error) return { error: error.message };
+  revalidatePath(`/properties/${propertyId}/expenses`);
+  return { success: true };
+}

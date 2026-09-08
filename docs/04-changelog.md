@@ -65,3 +65,9 @@ Scoped down to expenses only (no income/rent-roll tracking) based on what was ac
 **Deferred for later:** linking an expense to a specific lease/tenant turnover, a cross-property
 rollup view, and a "Reports" entry point for running reports per property or across the whole
 portfolio.
+
+### Edit existing expenses
+
+Expense rows only supported Remove at first. Each row now also has an Edit button that turns it
+into an inline editable row (date, category, vendor, description, amount), with Save and Cancel,
+so a typo or wrong amount doesn't need to be deleted and re-entered from scratch.

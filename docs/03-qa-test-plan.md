@@ -81,6 +81,10 @@ deliberately invited.
    - [ ] From a property's detail page, the "Expenses" link opens `/properties/[id]/expenses`.
    - [ ] Add an expense with a category, amount, vendor, and description — it appears in the
          table and the "This year" / "All time" / "By category" totals update.
+   - [ ] Click "Edit" on a row — it turns into an editable row with Save and Cancel.
+   - [ ] Change a field and click Save — the row updates and totals reflect the new amount if
+         changed.
+   - [ ] Click "Edit," change a field, then click Cancel — the original value is unchanged.
    - [ ] Remove an expense — it disappears and totals update accordingly.
 
 7. **Insurance renewal notification** *(added post-launch — see changelog)*
