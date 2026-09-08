@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import type { InsurancePolicy } from "@/lib/types";
+import MoneyInput from "@/components/MoneyInput";
 import { saveInsurance } from "./actions";
 
 function SubmitButton() {
@@ -35,10 +36,12 @@ export default function InsuranceSection({ propertyId, data }: { propertyId: str
         </div>
         <div>
           <label className="label" htmlFor="annual_premium">Annual premium</label>
-          <input className="input" id="annual_premium" name="annual_premium" type="number" step="0.01" defaultValue={data?.annual_premium ?? ""} />
+          <MoneyInput id="annual_premium" name="annual_premium" defaultValue={data?.annual_premium} />
         </div>
         <div>
-          <label className="label" htmlFor="renewal_date">Renewal date</label>
+          <label className="label" htmlFor="renewal_date">
+            Renewal date <span className="font-normal text-gray-400">(emails all owners 30 days before)</span>
+          </label>
           <input className="input" id="renewal_date" name="renewal_date" type="date" defaultValue={data?.renewal_date ?? ""} />
         </div>
         <div className="sm:col-span-2 flex items-center gap-3">

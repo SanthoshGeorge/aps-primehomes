@@ -1,8 +1,8 @@
 # APS PrimeHomes — Property Manager
 
 A small internal web app for the 3 owners of APS PrimeHomes LLC to track properties, tenants,
-leases, keys, mortgages, insurance, HOA, utilities, and service contacts — with an automatic
-email 60 days before a lease expires.
+leases, keys, mortgages, insurance, HOA, utilities, and service contacts — with automatic emails
+60 days before a lease expires and 30 days before an insurance policy renews.
 
 Built following an AIDLC (AI-Driven Development Lifecycle) process. See `docs/` for the
 Requirements, Architecture, and QA phase documents behind this build.
@@ -16,7 +16,12 @@ piece was chosen.
 ### 1. Supabase (database + login)
 
 1. Create a free project at [supabase.com](https://supabase.com).
-2. In the SQL Editor, paste and run the entire contents of `supabase/migrations/0001_init.sql`.
+2. In the SQL Editor, paste and run the entire contents of `supabase/migrations/0001_init.sql`,
+   then do the same with `supabase/migrations/0002_enhancements.sql` (adds notes fields, the
+   insurance-renewal reminder, and renames the mortgage term field to years — run it even on a
+   site that's already deployed; it's safe to run once). If you had already entered a mortgage
+   term in months, re-enter it after this migration — the column is renamed in place, so an old
+   value like `360` (months) will now be read as `360` years.
 3. Go to **Authentication → Providers → Email** and turn **off** "Allow new users to sign up."
    This is what makes the app invite-only.
 4. **For now, invite only yourself**: Go to **Authentication → Users → Invite user** and invite

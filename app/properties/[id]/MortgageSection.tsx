@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import type { Mortgage } from "@/lib/types";
+import MoneyInput from "@/components/MoneyInput";
 import { saveMortgage } from "./actions";
 
 function SubmitButton() {
@@ -31,19 +32,19 @@ export default function MortgageSection({ propertyId, data }: { propertyId: stri
         </div>
         <div>
           <label className="label" htmlFor="original_amount">Original loan amount</label>
-          <input className="input" id="original_amount" name="original_amount" type="number" step="0.01" defaultValue={data?.original_amount ?? ""} />
+          <MoneyInput id="original_amount" name="original_amount" defaultValue={data?.original_amount} />
         </div>
         <div>
           <label className="label" htmlFor="interest_rate">Interest rate (%)</label>
           <input className="input" id="interest_rate" name="interest_rate" type="number" step="0.001" defaultValue={data?.interest_rate ?? ""} />
         </div>
         <div>
-          <label className="label" htmlFor="term_months">Term (months)</label>
-          <input className="input" id="term_months" name="term_months" type="number" defaultValue={data?.term_months ?? ""} />
+          <label className="label" htmlFor="term_years">Term (years)</label>
+          <input className="input" id="term_years" name="term_years" type="number" defaultValue={data?.term_years ?? ""} />
         </div>
         <div>
           <label className="label" htmlFor="monthly_payment">Monthly payment</label>
-          <input className="input" id="monthly_payment" name="monthly_payment" type="number" step="0.01" defaultValue={data?.monthly_payment ?? ""} />
+          <MoneyInput id="monthly_payment" name="monthly_payment" defaultValue={data?.monthly_payment} />
         </div>
         <div>
           <label className="label" htmlFor="maturity_date">Maturity / payoff date</label>

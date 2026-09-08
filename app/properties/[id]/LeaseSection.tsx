@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import Link from "next/link";
 import type { Lease } from "@/lib/types";
 import { leaseStatus, STATUS_LABEL, STATUS_BADGE_CLASS, formatDate, formatCurrency } from "@/lib/format";
+import MoneyInput from "@/components/MoneyInput";
 import { addLease, endCurrentLease } from "./actions";
 
 function SubmitButton({ label }: { label: string }) {
@@ -18,11 +20,11 @@ function SubmitButton({ label }: { label: string }) {
 export default function LeaseSection({
   propertyId,
   currentLease,
-  history,
+  historyCount,
 }: {
   propertyId: string;
   currentLease: Lease | null;
-  history: Lease[];
+  historyCount: number;
 }) {
   const [showForm, setShowForm] = useState(!currentLease);
   const action = addLease.bind(null, propertyId);
@@ -51,6 +53,12 @@ export default function LeaseSection({
             <dd>
               {formatDate(currentLease.start_date)} – {formatDate(currentLease.end_date)}
             </dd>
+            {currentLease.notes && (
+              <>
+                <dt className="text-gray-500">Notes</dt>
+                <dd className="whitespace-pre-wrap">{currentLease.notes}</dd>
+              </>
+            )}
           </dl>
           <div className="flex gap-4 mt-3">
             <button className="text-sm text-brand-600 hover:underline" onClick={() => setShowForm(true)}>
@@ -70,6 +78,15 @@ export default function LeaseSection({
         <p className="text-sm text-gray-400 mb-4">No current tenant — this property is vacant.</p>
       )}
 
+      {!showForm && (
+        <Link
+          href={`/properties/${propertyId}/history`}
+          className="text-sm text-gray-500 hover:text-brand-600 hover:underline"
+        >
+          View past tenants{historyCount > 0 ? ` (${historyCount})` : ""} →
+        </Link>
+      )}
+
       {showForm && (
         <form action={formAction} className="space-y-3 border-t border-gray-100 pt-4">
           <div className="grid sm:grid-cols-2 gap-3">
@@ -83,7 +100,7 @@ export default function LeaseSection({
               <label className="label" htmlFor="rent_amount">
                 Monthly rent
               </label>
-              <input className="input" id="rent_amount" name="rent_amount" type="number" step="0.01" />
+              <MoneyInput id="rent_amount" name="rent_amount" />
             </div>
             <div>
               <label className="label" htmlFor="tenant_phone">
@@ -109,6 +126,12 @@ export default function LeaseSection({
               </label>
               <input className="input" id="end_date" name="end_date" type="date" required />
             </div>
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="notes">
+                Notes
+              </label>
+              <textarea className="input" id="notes" name="notes" rows={2} />
+            </div>
           </div>
           {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
           <div className="flex gap-3">
@@ -120,34 +143,6 @@ export default function LeaseSection({
             )}
           </div>
         </form>
-      )}
-
-      {history.length > 0 && (
-        <details className="mt-4">
-          <summary className="text-sm text-gray-500 cursor-pointer">
-            Lease history ({history.length})
-          </summary>
-          <table className="w-full text-sm mt-2">
-            <thead className="text-gray-500 text-left">
-              <tr>
-                <th className="py-1">Tenant</th>
-                <th className="py-1">Start</th>
-                <th className="py-1">End</th>
-                <th className="py-1">Rent</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((l) => (
-                <tr key={l.id} className="border-t border-gray-100">
-                  <td className="py-1">{l.tenant_name}</td>
-                  <td className="py-1">{formatDate(l.start_date)}</td>
-                  <td className="py-1">{formatDate(l.end_date)}</td>
-                  <td className="py-1">{formatCurrency(l.rent_amount)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </details>
       )}
     </div>
   );

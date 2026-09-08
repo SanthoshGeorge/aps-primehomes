@@ -34,15 +34,17 @@ export default function UtilitiesSection({
               <th className="py-1">Type</th>
               <th className="py-1">Provider</th>
               <th className="py-1">Account</th>
+              <th className="py-1">Notes</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {items.map((u) => (
-              <tr key={u.id} className="border-t border-gray-100">
+              <tr key={u.id} className="border-t border-gray-100 align-top">
                 <td className="py-1">{u.utility_type}</td>
                 <td className="py-1">{u.provider || "—"}</td>
                 <td className="py-1">{u.account_reference || "—"}</td>
+                <td className="py-1 text-gray-500">{u.notes || "—"}</td>
                 <td className="py-1 text-right">
                   <button
                     className="text-xs text-gray-400 hover:text-red-600"
@@ -69,6 +71,10 @@ export default function UtilitiesSection({
         <div>
           <label className="label" htmlFor="account_reference">Account #</label>
           <input className="input" id="account_reference" name="account_reference" />
+        </div>
+        <div className="sm:col-span-3">
+          <label className="label" htmlFor="notes">Notes</label>
+          <textarea className="input" id="notes" name="notes" rows={2} />
         </div>
         {state?.error && <p className="text-sm text-red-600 sm:col-span-3">{state.error}</p>}
         <div className="sm:col-span-3">

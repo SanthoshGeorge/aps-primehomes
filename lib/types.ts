@@ -25,6 +25,7 @@ export type Lease = {
   end_date: string;
   is_current: boolean;
   notified_expiry: boolean;
+  notes: string | null;
   created_at: string;
 };
 
@@ -45,7 +46,7 @@ export type Mortgage = {
   account_last4: string | null;
   original_amount: number | null;
   interest_rate: number | null;
-  term_months: number | null;
+  term_years: number | null;
   monthly_payment: number | null;
   maturity_date: string | null;
 };
@@ -58,6 +59,7 @@ export type InsurancePolicy = {
   coverage_summary: string | null;
   annual_premium: number | null;
   renewal_date: string | null;
+  notified_renewal: boolean;
 };
 
 export type HoaInfo = {
@@ -75,6 +77,7 @@ export type UtilityAccount = {
   utility_type: string;
   provider: string | null;
   account_reference: string | null;
+  notes: string | null;
 };
 
 export type ServiceContact = {

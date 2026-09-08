@@ -59,6 +59,7 @@ leases                                    -- full history, not just current
   end_date          date
   is_current        boolean default true
   notified_expiry   boolean default false  -- set true once the 60-day email has fired
+  notes             text
   created_at        timestamptz default now()
 
 keys_access          (one row per property)
@@ -77,7 +78,7 @@ mortgages             (one row per property)
   account_last4    text        -- last 4 digits only, see §4 Security
   original_amount  numeric
   interest_rate    numeric
-  term_months      int
+  term_years       int     -- renamed from term_months after first round of testing
   monthly_payment  numeric
   maturity_date    date
 
@@ -89,6 +90,7 @@ insurance_policies    (one row per property)
   coverage_summary   text
   annual_premium     numeric
   renewal_date       date
+  notified_renewal   boolean default false  -- set true once the 30-day renewal email has fired
 
 hoa_info               (one row per property)
   id             uuid PK
@@ -104,6 +106,7 @@ utility_accounts       (many per property)
   utility_type       text   -- electric / gas / water / trash / internet / other
   provider           text
   account_reference  text
+  notes              text
 
 service_contacts       (many per property)
   id           uuid PK
@@ -114,17 +117,20 @@ service_contacts       (many per property)
   notes        text
 
 notification_log
-  id         uuid PK
-  lease_id   uuid FK -> leases
-  type       text default 'lease_expiry'
-  sent_at    timestamptz default now()
+  id                   uuid PK
+  lease_id             uuid FK -> leases, nullable            -- set for lease_expiry rows
+  insurance_policy_id  uuid FK -> insurance_policies, nullable -- set for insurance_renewal rows
+  type                 text default 'lease_expiry'  -- 'lease_expiry' | 'insurance_renewal'
+  sent_at              timestamptz default now()
 ```
 
 Design notes:
-- `leases` keeps full history (past tenants) per §5.2 of the requirements — the "current" lease is the row with `is_current = true`; a vacant property has no current row.
+- `leases` keeps full history (past tenants) per §5.2 of the requirements — the "current" lease is the row with `is_current = true`; a vacant property has no current row. Past tenants live on their own page (`properties/[id]/history`), linked from the current-lease card, so the main property page stays short as more history accumulates.
 - `mortgages`/`insurance_policies`/`hoa_info` are 1:1 with a property, split into their own tables (rather than extra columns on `properties`) purely for readability and so file-upload columns (v2) can be added to the relevant table later without touching unrelated data.
 - `utility_accounts` and `service_contacts` are 1:many, matching the "multiple handyman contacts" requirement.
 - No table stores a full mortgage/loan account number, tenant government ID, or payment card data (§6 of requirements).
+- `notification_log.lease_id` is nullable (originally `not null`) so the same table can also log insurance-renewal notifications, which have no associated lease — exactly one of `lease_id` / `insurance_policy_id` is set per row, matching `type`.
+- All dollar-amount fields (`rent_amount`, mortgage `original_amount`/`monthly_payment`, `annual_premium`, HOA `due_amount`) are entered and displayed through a shared `MoneyInput` component with a fixed `$` prefix, so formatting is consistent everywhere.
 
 ## 3. Auth & security model
 
@@ -133,14 +139,13 @@ Design notes:
 - The Supabase **service role key** (which bypasses RLS) is used only by the server-side notification check (§4) and is never sent to the browser.
 - `.env` files are git-ignored; secrets live only in Netlify's environment variable settings.
 
-## 4. Lease-expiry notification design
+## 4. Notification design (lease expiry + insurance renewal)
 
-- A Netlify Scheduled Function runs once a day (e.g. `0 13 * * *`, ~8am/7am Chicago depending on DST).
-- Each run:
-  1. Queries `leases` where `is_current = true`, `notified_expiry = false`, and `end_date` is within 60 days of today.
-  2. For each match, sends one email (via Brevo's API) to all 3 owner addresses, naming the property, tenant, and exact end date.
-  3. Marks that lease row's `notified_expiry = true` and inserts a `notification_log` row — so it fires once, not every day.
-- A lease renewal is entered as a **new** `leases` row (old row's `is_current` set to false) — so the notified flag naturally resets for the new lease term.
+- A single Netlify Scheduled Function (`netlify/functions/lease-check.mts`) runs once a day (e.g. `0 13 * * *`, ~8am/7am Chicago depending on DST) and performs two independent checks, both sent to all 3 owner addresses via Brevo's API:
+  1. **Lease expiry (60-day window):** queries `leases` where `is_current = true`, `notified_expiry = false`, and `end_date` is within 60 days of today. For each match, sends one email naming the property, tenant, and exact end date, then marks `notified_expiry = true` and inserts a `notification_log` row (`type = 'lease_expiry'`, `lease_id` set).
+  2. **Insurance renewal (30-day window):** queries `insurance_policies` where `notified_renewal = false` and `renewal_date` is within 30 days of today. For each match, sends one email naming the property, carrier, and renewal date, then marks `notified_renewal = true` and inserts a `notification_log` row (`type = 'insurance_renewal'`, `insurance_policy_id` set).
+- Both checks run in parallel (`Promise.all`) and share one owner lookup and email-sending helper; a failure in one check (e.g. the email send throws) leaves that item's flag `false` so it's retried on the next day's run, and doesn't block the other check.
+- A lease renewal is entered as a **new** `leases` row (old row's `is_current` set to false) — so the notified flag naturally resets for the new lease term. Editing an insurance policy's details always resets `notified_renewal` to `false`, so a corrected renewal date re-arms the reminder.
 - This same job, on its daily run, also touches the database — which incidentally keeps the Supabase free project from auto-pausing (pause trigger is 7 days of *no* activity; a daily query prevents that entirely).
 
 ## 5. Application structure
@@ -150,6 +155,7 @@ app/
   login/page.tsx
   (dashboard)/page.tsx              -- property list + expiring-soon flags
   properties/[id]/page.tsx          -- full detail: lease, keys, mortgage, insurance, HOA, utilities, contacts
+  properties/[id]/history/page.tsx  -- past tenants for this property (linked from the lease card)
   properties/new/page.tsx
 lib/
   supabase/client.ts                -- browser client (anon key)

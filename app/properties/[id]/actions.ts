@@ -67,6 +67,7 @@ export async function addLease(propertyId: string, _prev: ActionState, formData:
     end_date,
     is_current: true,
     notified_expiry: false,
+    notes: str(formData, "notes"),
   });
 
   if (error) return { error: error.message };
@@ -111,7 +112,7 @@ export async function saveMortgage(propertyId: string, _prev: ActionState, formD
       account_last4: str(formData, "account_last4"),
       original_amount: num(formData, "original_amount"),
       interest_rate: num(formData, "interest_rate"),
-      term_months: num(formData, "term_months"),
+      term_years: num(formData, "term_years"),
       monthly_payment: num(formData, "monthly_payment"),
       maturity_date: str(formData, "maturity_date"),
     },
@@ -134,6 +135,9 @@ export async function saveInsurance(propertyId: string, _prev: ActionState, form
       coverage_summary: str(formData, "coverage_summary"),
       annual_premium: num(formData, "annual_premium"),
       renewal_date: str(formData, "renewal_date"),
+      // Any edit re-arms the 30-day renewal reminder — most commonly because
+      // the renewal_date itself just changed to a new future date.
+      notified_renewal: false,
     },
     { onConflict: "property_id" }
   );
@@ -173,6 +177,7 @@ export async function addUtility(propertyId: string, _prev: ActionState, formDat
     utility_type,
     provider: str(formData, "provider"),
     account_reference: str(formData, "account_reference"),
+    notes: str(formData, "notes"),
   });
 
   if (error) return { error: error.message };

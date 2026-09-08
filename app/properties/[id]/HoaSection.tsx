@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import type { HoaInfo } from "@/lib/types";
+import MoneyInput from "@/components/MoneyInput";
 import { saveHoa } from "./actions";
 
 function SubmitButton() {
@@ -27,7 +28,7 @@ export default function HoaSection({ propertyId, data }: { propertyId: string; d
         </div>
         <div>
           <label className="label" htmlFor="due_amount">Due amount</label>
-          <input className="input" id="due_amount" name="due_amount" type="number" step="0.01" defaultValue={data?.due_amount ?? ""} />
+          <MoneyInput id="due_amount" name="due_amount" defaultValue={data?.due_amount} />
         </div>
         <div>
           <label className="label" htmlFor="due_frequency">Due frequency</label>
