@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useFormState, useFormStatus } from "react-dom";
 import { updatePassword } from "./actions";
 
@@ -39,6 +40,10 @@ export default function UpdatePasswordPage() {
           {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
           <SubmitButton />
         </form>
+
+        <Link href="/settings" className="block text-center text-sm text-gray-400 hover:text-gray-600 mt-4">
+          Cancel
+        </Link>
       </div>
     </div>
   );
