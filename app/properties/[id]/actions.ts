@@ -18,6 +18,9 @@ function str(formData: FormData, key: string): string | null {
 }
 
 // ── Property details ──────────────────────────────────────────────
+// Autosaved (see lib/useAutosave.ts) — no revalidatePath here on purpose,
+// since the form already reflects what was typed and we don't want a
+// background save to refresh (and disrupt) the rest of the page.
 export async function updateProperty(propertyId: string, _prev: ActionState, formData: FormData) {
   const supabase = createClient();
   const { error } = await supabase
@@ -31,7 +34,6 @@ export async function updateProperty(propertyId: string, _prev: ActionState, for
     .eq("id", propertyId);
 
   if (error) return { error: error.message };
-  revalidatePath(`/properties/${propertyId}`);
   return { success: true };
 }
 
@@ -83,6 +85,7 @@ export async function endCurrentLease(propertyId: string) {
 }
 
 // ── Keys & access (upsert, one row per property) ────────────────────
+// Autosaved — see the note on updateProperty above.
 export async function saveKeysAccess(propertyId: string, _prev: ActionState, formData: FormData) {
   const supabase = createClient();
   const { error } = await supabase.from("keys_access").upsert(
@@ -98,11 +101,11 @@ export async function saveKeysAccess(propertyId: string, _prev: ActionState, for
   );
 
   if (error) return { error: error.message };
-  revalidatePath(`/properties/${propertyId}`);
   return { success: true };
 }
 
 // ── Mortgage (upsert) ────────────────────────────────────────────────
+// Autosaved — see the note on updateProperty above.
 export async function saveMortgage(propertyId: string, _prev: ActionState, formData: FormData) {
   const supabase = createClient();
   const { error } = await supabase.from("mortgages").upsert(
@@ -120,11 +123,11 @@ export async function saveMortgage(propertyId: string, _prev: ActionState, formD
   );
 
   if (error) return { error: error.message };
-  revalidatePath(`/properties/${propertyId}`);
   return { success: true };
 }
 
 // ── Insurance (upsert) ───────────────────────────────────────────────
+// Autosaved — see the note on updateProperty above.
 export async function saveInsurance(propertyId: string, _prev: ActionState, formData: FormData) {
   const supabase = createClient();
   const { error } = await supabase.from("insurance_policies").upsert(
@@ -143,11 +146,11 @@ export async function saveInsurance(propertyId: string, _prev: ActionState, form
   );
 
   if (error) return { error: error.message };
-  revalidatePath(`/properties/${propertyId}`);
   return { success: true };
 }
 
 // ── HOA (upsert) ─────────────────────────────────────────────────────
+// Autosaved — see the note on updateProperty above.
 export async function saveHoa(propertyId: string, _prev: ActionState, formData: FormData) {
   const supabase = createClient();
   const { error } = await supabase.from("hoa_info").upsert(
@@ -162,7 +165,6 @@ export async function saveHoa(propertyId: string, _prev: ActionState, formData: 
   );
 
   if (error) return { error: error.message };
-  revalidatePath(`/properties/${propertyId}`);
   return { success: true };
 }
 

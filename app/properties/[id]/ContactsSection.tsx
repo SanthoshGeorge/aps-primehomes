@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import type { ServiceContact } from "@/lib/types";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { addContact, deleteContact } from "./actions";
 
 function SubmitButton() {
@@ -24,9 +25,7 @@ export default function ContactsSection({
   const [state, formAction] = useFormState(action, undefined);
 
   return (
-    <div className="card">
-      <h2 className="section-title">Handyman & service contacts</h2>
-
+    <CollapsibleSection title="Handyman & service contacts">
       {items.length > 0 && (
         <table className="w-full text-sm mb-4">
           <thead className="text-gray-500 text-left">
@@ -75,6 +74,6 @@ export default function ContactsSection({
           <SubmitButton />
         </div>
       </form>
-    </div>
+    </CollapsibleSection>
   );
 }

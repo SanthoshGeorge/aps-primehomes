@@ -1,27 +1,18 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
 import type { Mortgage } from "@/lib/types";
 import MoneyInput from "@/components/MoneyInput";
+import { useAutosave } from "@/lib/useAutosave";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { saveMortgage } from "./actions";
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button type="submit" className="btn-secondary" disabled={pending}>
-      {pending ? "Saving…" : "Save"}
-    </button>
-  );
-}
-
 export default function MortgageSection({ propertyId, data }: { propertyId: string; data: Mortgage | null }) {
-  const action = saveMortgage.bind(null, propertyId);
-  const [state, formAction] = useFormState(action, undefined);
+  const action = saveMortgage.bind(null, propertyId, undefined);
+  const { formRef, status, error, handleChange, handleBlur } = useAutosave(action);
 
   return (
-    <div className="card">
-      <h2 className="section-title">Mortgage</h2>
-      <form action={formAction} className="grid sm:grid-cols-2 gap-3">
+    <CollapsibleSection title="Mortgage">
+      <form ref={formRef} onChange={handleChange} onBlur={handleBlur} className="grid sm:grid-cols-2 gap-3">
         <div>
           <label className="label" htmlFor="lender">Lender</label>
           <input className="input" id="lender" name="lender" defaultValue={data?.lender ?? ""} />
@@ -50,12 +41,12 @@ export default function MortgageSection({ propertyId, data }: { propertyId: stri
           <label className="label" htmlFor="maturity_date">Maturity / payoff date</label>
           <input className="input" id="maturity_date" name="maturity_date" type="date" defaultValue={data?.maturity_date ?? ""} />
         </div>
-        <div className="sm:col-span-2 flex items-center gap-3">
-          <SubmitButton />
-          {state?.success && <span className="text-sm text-green-700">Saved.</span>}
-          {state?.error && <span className="text-sm text-red-600">{state.error}</span>}
+        <div className="sm:col-span-2 h-4">
+          {status === "saving" && <span className="text-sm text-gray-400">Saving…</span>}
+          {status === "saved" && <span className="text-sm text-green-700">Saved</span>}
+          {status === "error" && <span className="text-sm text-red-600">{error}</span>}
         </div>
       </form>
-    </div>
+    </CollapsibleSection>
   );
 }

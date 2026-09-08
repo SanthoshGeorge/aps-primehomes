@@ -1,21 +1,12 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
 import type { Property } from "@/lib/types";
+import { useAutosave } from "@/lib/useAutosave";
 import { updateProperty, setPropertyStatus } from "./actions";
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button type="submit" className="btn-secondary" disabled={pending}>
-      {pending ? "Saving…" : "Save details"}
-    </button>
-  );
-}
-
 export default function PropertyHeader({ property }: { property: Property }) {
-  const action = updateProperty.bind(null, property.id);
-  const [state, formAction] = useFormState(action, undefined);
+  const action = updateProperty.bind(null, property.id, undefined);
+  const { formRef, status, error, handleChange, handleBlur } = useAutosave(action);
 
   return (
     <div className="card">
@@ -38,7 +29,7 @@ export default function PropertyHeader({ property }: { property: Property }) {
         )}
       </div>
 
-      <form action={formAction} className="grid sm:grid-cols-2 gap-4">
+      <form ref={formRef} onChange={handleChange} onBlur={handleBlur} className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="label" htmlFor="nickname">
             Nickname / label
@@ -69,10 +60,10 @@ export default function PropertyHeader({ property }: { property: Property }) {
             defaultValue={property.date_acquired || ""}
           />
         </div>
-        <div className="sm:col-span-2 flex items-center gap-3">
-          <SubmitButton />
-          {state?.success && <span className="text-sm text-green-700">Saved.</span>}
-          {state?.error && <span className="text-sm text-red-600">{state.error}</span>}
+        <div className="sm:col-span-2 h-4">
+          {status === "saving" && <span className="text-sm text-gray-400">Saving…</span>}
+          {status === "saved" && <span className="text-sm text-green-700">Saved</span>}
+          {status === "error" && <span className="text-sm text-red-600">{error}</span>}
         </div>
       </form>
     </div>

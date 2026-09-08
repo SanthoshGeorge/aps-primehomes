@@ -2,6 +2,7 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import type { UtilityAccount } from "@/lib/types";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { addUtility, deleteUtility } from "./actions";
 
 function SubmitButton() {
@@ -24,9 +25,7 @@ export default function UtilitiesSection({
   const [state, formAction] = useFormState(action, undefined);
 
   return (
-    <div className="card">
-      <h2 className="section-title">Utilities</h2>
-
+    <CollapsibleSection title="Utilities">
       {items.length > 0 && (
         <table className="w-full text-sm mb-4">
           <thead className="text-gray-500 text-left">
@@ -81,6 +80,6 @@ export default function UtilitiesSection({
           <SubmitButton />
         </div>
       </form>
-    </div>
+    </CollapsibleSection>
   );
 }

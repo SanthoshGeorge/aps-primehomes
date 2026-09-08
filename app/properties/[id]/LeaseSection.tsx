@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Lease } from "@/lib/types";
 import { leaseStatus, STATUS_LABEL, STATUS_BADGE_CLASS, formatDate, formatCurrency } from "@/lib/format";
 import MoneyInput from "@/components/MoneyInput";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { addLease, endCurrentLease } from "./actions";
 
 function SubmitButton({ label }: { label: string }) {
@@ -32,9 +33,7 @@ export default function LeaseSection({
   const status = leaseStatus(currentLease);
 
   return (
-    <div className="card">
-      <h2 className="section-title">Current tenant & lease</h2>
-
+    <CollapsibleSection title="Current tenant & lease" defaultOpen={true}>
       {currentLease && !showForm && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
@@ -144,6 +143,6 @@ export default function LeaseSection({
           </div>
         </form>
       )}
-    </div>
+    </CollapsibleSection>
   );
 }

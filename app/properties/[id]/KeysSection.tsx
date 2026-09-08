@@ -1,17 +1,9 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
 import type { KeysAccess, Owner } from "@/lib/types";
+import { useAutosave } from "@/lib/useAutosave";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { saveKeysAccess } from "./actions";
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button type="submit" className="btn-secondary" disabled={pending}>
-      {pending ? "Saving…" : "Save"}
-    </button>
-  );
-}
 
 export default function KeysSection({
   propertyId,
@@ -22,13 +14,12 @@ export default function KeysSection({
   data: KeysAccess | null;
   owners: Owner[];
 }) {
-  const action = saveKeysAccess.bind(null, propertyId);
-  const [state, formAction] = useFormState(action, undefined);
+  const action = saveKeysAccess.bind(null, propertyId, undefined);
+  const { formRef, status, error, handleChange, handleBlur } = useAutosave(action);
 
   return (
-    <div className="card">
-      <h2 className="section-title">Keys & access</h2>
-      <form action={formAction} className="grid sm:grid-cols-2 gap-3">
+    <CollapsibleSection title="Keys & access">
+      <form ref={formRef} onChange={handleChange} onBlur={handleBlur} className="grid sm:grid-cols-2 gap-3">
         <div>
           <label className="label" htmlFor="key_count"># of keys</label>
           <input className="input" id="key_count" name="key_count" type="number" defaultValue={data?.key_count ?? ""} />
@@ -85,12 +76,12 @@ export default function KeysSection({
           </label>
           <textarea className="input" id="notes" name="notes" rows={2} defaultValue={data?.notes ?? ""} />
         </div>
-        <div className="sm:col-span-2 flex items-center gap-3">
-          <SubmitButton />
-          {state?.success && <span className="text-sm text-green-700">Saved.</span>}
-          {state?.error && <span className="text-sm text-red-600">{state.error}</span>}
+        <div className="sm:col-span-2 h-4">
+          {status === "saving" && <span className="text-sm text-gray-400">Saving…</span>}
+          {status === "saved" && <span className="text-sm text-green-700">Saved</span>}
+          {status === "error" && <span className="text-sm text-red-600">{error}</span>}
         </div>
       </form>
-    </div>
+    </CollapsibleSection>
   );
 }
